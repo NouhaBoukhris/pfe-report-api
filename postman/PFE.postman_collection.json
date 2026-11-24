@@ -1,0 +1,281 @@
+{
+  "info": {
+    "name": "PFE Report API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5003"
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "id_s",
+      "value": ""
+    },
+    {
+      "key": "id_r",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code < 300) {",
+              "  pm.collectionVariables.set(\"access_token\", pm.response.json().access_token);",
+              "  pm.collectionVariables.set(\"refresh_token\", pm.response.json().refresh_token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create student",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/students",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Example\",\n  \"last_name\": \"Student\",\n  \"major\": \"IT\",\n  \"level\": 4,\n  \"double_major\": false\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code < 300) {",
+              "  pm.collectionVariables.set(\"id_s\", pm.response.json().id_s);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create report",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/reports",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Retail analytics\",\n  \"type\": \"PFE\",\n  \"k1\": \"Python\",\n  \"k2\": \"Data\",\n  \"k3\": \"Retail\",\n  \"release_date\": \"2026-06-01\",\n  \"major\": \"IT\",\n  \"student_id\": {{id_s}}\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code < 300) {",
+              "  pm.collectionVariables.set(\"id_r\", pm.response.json().id_r);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search reports",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reports/search?keyword=Python&major=IT&type=PFE",
+        "header": []
+      }
+    },
+    {
+      "name": "List students",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/students",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Read student",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/students/{{id_s}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "List reports",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reports",
+        "header": []
+      }
+    },
+    {
+      "name": "Read report",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reports/{{id_r}}",
+        "header": []
+      }
+    },
+    {
+      "name": "Refresh token",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/refresh",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{refresh_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code < 300) {",
+              "  pm.collectionVariables.set(\"access_token\", pm.response.json().access_token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update report",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/reports/{{id_r}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Retail analytics\",\n  \"type\": \"PFE\",\n  \"k1\": \"Python\",\n  \"k2\": \"Data\",\n  \"k3\": \"Retail\",\n  \"release_date\": \"2026-06-01\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Update student",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/students/{{id_s}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Example\",\n  \"last_name\": \"Student\",\n  \"major\": \"IT\",\n  \"level\": 4,\n  \"double_major\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete report",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/reports/{{id_r}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Delete student",
+      "request": {
+        "method": "DELETE",
+        "url": "{{base_url}}/students/{{id_s}}",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      }
+    }
+  ]
+}
